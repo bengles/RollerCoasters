@@ -13,6 +13,7 @@
 		0B03E5121D8FE0EC00F955A8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0B03E5101D8FE0EC00F955A8 /* Main.storyboard */; };
 		0B03E5141D8FE0EC00F955A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B03E5131D8FE0EC00F955A8 /* Assets.xcassets */; };
 		0B03E5171D8FE0EC00F955A8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0B03E5151D8FE0EC00F955A8 /* LaunchScreen.storyboard */; };
+		0B56BDBA1D9C0BE800598FAF /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B56BDB91D9C0BE800598FAF /* CoreBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		0B03E5131D8FE0EC00F955A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0B03E5161D8FE0EC00F955A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0B03E5181D8FE0EC00F955A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0B56BDB91D9C0BE800598FAF /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B56BDBA1D9C0BE800598FAF /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +45,7 @@
 			children = (
 				0B03E5091D8FE0EC00F955A8 /* rollercoaster */,
 				0B03E5081D8FE0EC00F955A8 /* Products */,
+				0B56BDB81D9C0BE800598FAF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -65,6 +69,14 @@
 				0B03E5181D8FE0EC00F955A8 /* Info.plist */,
 			);
 			path = rollercoaster;
+			sourceTree = "<group>";
+		};
+		0B56BDB81D9C0BE800598FAF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0B56BDB91D9C0BE800598FAF /* CoreBluetooth.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -99,6 +111,7 @@
 				TargetAttributes = {
 					0B03E5061D8FE0EC00F955A8 = {
 						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = 7W6W8KX5VR;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -262,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 7W6W8KX5VR;
 				INFOPLIST_FILE = rollercoaster/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kth.rollercoaster;
@@ -274,6 +288,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 7W6W8KX5VR;
 				INFOPLIST_FILE = rollercoaster/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kth.rollercoaster;
@@ -301,6 +316,7 @@
 				0B03E51D1D8FE0EC00F955A8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
