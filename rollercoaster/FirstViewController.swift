@@ -16,22 +16,48 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
     var adafruit:CBPeripheral!
     var uartUUID:String!
     var uartRUUID:String!
+    var uartWUUID:String!
     var weight:Int = 0
-    var weights:[Int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     var weightPos = 0
     var calibratedWeight:Int = 0
     var initialized:Bool = false
     var zipWeight:Int = 170 * 3
     var acceptableError:Int = 255
+    var writeCharacteristic:CBCharacteristic!
+    var LED:Data!
+    var message:NSString!
+    var weights:[Int]!
+    let averageNr:Int = 10
+    var numberOfSips:Int = 1;
     
     @IBOutlet weak var WeightLabel: UILabel!
     @IBOutlet weak var DifferenceLabel: UILabel!
+    @IBOutlet weak var GameText: UILabel!
+    @IBOutlet weak var stepper: UIStepper!
+    @IBOutlet weak var stepText: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         startUpCentralManager()
         uartUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
+        uartWUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
         uartRUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
+        GameText.text = "Wait.."
+        self.view.backgroundColor = UIColor.yellow
+        message = "y"
+        weights = Array(repeating: 0, count: averageNr)
+        stepText.text = String(numberOfSips)
+        stepper.value = 1;
+    }
+    
+    @IBAction func stepperAction(_ sender: AnyObject) {
+        message = "y"
+        self.view.backgroundColor = UIColor.yellow
+        sendMessage()
+        GameText.text = "Drink!!"
+        numberOfSips = Int(stepper.value)
+        stepText.text = String(numberOfSips)
     }
     
     func startUpCentralManager() {
@@ -45,11 +71,48 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
             print("Calibrate yao")
         
             print(weight)
-        
+            
+            GameText.text = "Drink 3 sips"
+            
             calibratedWeight = weight;
         } else {
             print("Not initialized yet.")
         }
+    }
+    
+    @IBAction func Red(_ sender: AnyObject) {
+        self.view.backgroundColor = UIColor.red
+        GameText.text = "You lost!"
+        
+        // Set LED color
+        message = "r"
+        
+        sendMessage()
+    }
+    
+    @IBAction func Green(_ sender: AnyObject) {
+        self.view.backgroundColor = UIColor.green
+        GameText.text = "You win!"
+        
+        // Set LED color
+        message = "g"
+        
+        sendMessage()
+    }
+    
+    @IBAction func Yellow(_ sender: AnyObject) {
+        self.view.backgroundColor = UIColor.yellow
+        GameText.text = "Drink!!"
+        
+        // Set LED color
+        message = "y"
+        
+        sendMessage()
+    }
+    
+    func sendMessage() {
+        let data = NSData(bytes: message.utf8String, length: message.length)
+        adafruit.writeValue(data as Data, for: writeCharacteristic, type: CBCharacteristicWriteType.withResponse)
     }
     
     @IBAction func Done(_ sender: AnyObject) {
@@ -57,9 +120,23 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
         DifferenceLabel.text = "\(w)";
         if(zipWeight - acceptableError < w && w < zipWeight + acceptableError) {
             self.view.backgroundColor = UIColor.green
+            GameText.text = "You win!"
+            
+            // Set LED color
+            message = "g"
         } else {
-            self.view.backgroundColor = UIColor.red
+            self.view.backgroundColor = UIColor.green
+            GameText.text = "You win!"
+            
+            // Set LED color
+            message = "g"
         }
+        let data = NSData(bytes: message.utf8String, length: message.length)
+        adafruit.writeValue(data as Data, for: writeCharacteristic, type: CBCharacteristicWriteType.withResponse)
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        
     }
     
     func discoverDevices() {
@@ -69,7 +146,7 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any],
     rssi RSSI: NSNumber) {
-        print("Discovered \(peripheral.name)")
+        //print("Discovered \(peripheral.name)")
         if (peripheral.name == "Adafruit Bluefruit LE" && adafruit != peripheral) {
             adafruit = peripheral
             adafruit.delegate = self
@@ -79,9 +156,8 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("OMG IT JUST CONNETCED")
-        centralManager.stopScan()
+        //centralManager.stopScan()
         adafruit.discoverServices(nil)
-        
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -134,6 +210,9 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
                 print("Matched characteristic")
                 adafruit.setNotifyValue(true, for: characteristic)
             }
+            if (characteristic.uuid.uuidString == uartWUUID) {
+                writeCharacteristic = characteristic
+            }
         }
     }
     
@@ -141,15 +220,18 @@ class FirstViewController: UIViewController, CBCentralManagerDelegate, CBPeriphe
         if (characteristic.value?.count != 20) {
             let str = String(data: characteristic.value!, encoding: String.Encoding.ascii)
             let w = Int(str!)!
-            weights[weightPos % 10] = w
+            weights[weightPos % averageNr] = w
             weightPos += 1
-            if weightPos >= 10 {
-                weight = weights.sorted()[4]
+            if weightPos >= averageNr {
+                //weight = weights.sorted()[averageNr/2]
+                weight = weights.reduce(0, +)/weights.count
                 WeightLabel.text = String(weight)
+                print(weight)
             }
-            if weightPos == 10 {
+            if weightPos == averageNr {
                 initialized = true
                 print("Initialized")
+                GameText.text = "Calibrate"
             }
         }
     }
